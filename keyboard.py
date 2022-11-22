@@ -42,11 +42,12 @@ class Keyboard:
         dunif = random.uniform(0, 1)
         
         keys = list(self.keyDict.keys())
-        keyPressed = ""
 
         i = 0
+        keyPressed = keys[i]
+
         while dunif > self.keyDict[keys[i]]:
-            keyPressed = keys[i]
             i += 1
+            keyPressed = keys[i]
         
         return keyPressed
