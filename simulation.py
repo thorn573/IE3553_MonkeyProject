@@ -14,7 +14,6 @@ class Simulation:
             numKeysPressedPerMonkey = 1,
             keyPathNames = ["Main"],
             pathDict = { "Main": [1, 1] }, 
-            numDistractions = 0, 
             numRocks = 0, 
             repairRate = 0,
         ):
@@ -25,7 +24,7 @@ class Simulation:
         self.numKeysPressedPerMonkey = numKeysPressedPerMonkey
         self.keyPathNames = keyPathNames
         self.pathDict = pathDict
-        self.numDistractions = numDistractions
+        self.numDistractions = len(pathDict.keys()) - len(keyPathNames)
         self.numRocks = numRocks
         self.repairRate = repairRate
 
@@ -41,37 +40,49 @@ class Simulation:
         self.correctWordList = []
 
 
-    def run(self):
-        simMonkey = monkey.Monkey(self.pathDict)
+    def run(self, numWords = 1):
+        # need rock
+        # print to csv, do stats in R
         simKeyboard = keyboard.Keyboard()
 
-        for i in range(self.numMonkeys):
-            pathTraveled, timeTaken = simMonkey.travelRandomPath()
-            
-            self.time += timeTaken
+        while len(self.correctWordList) < numWords:
+            recordedTime = 0
+            interarrivalTime = random.expovariate(self.interArrivalRate) 
+            for i in range(self.numMonkeysPerArrival):
+                simMonkey = monkey.Monkey(self.pathDict)
+                pathTraveled, timeTaken = simMonkey.travelRandomPath()
 
-            if pathTraveled in self.keyPathNames:
-                for i in range(self.numKeysPressedPerMonkey):
-                    keyPressed = simKeyboard.getKeyPress()
-                    if len(self.createdWordList[self.wordIndex]) < self.wordLength:
-                        self.createdWordList[self.wordIndex] += keyPressed
-                    else: 
-                        if self.createdWordList[self.wordIndex].lower() in self.knownWordList:
-                            self.correctWordList.append(self.createdWordList[self.wordIndex])
+                serviceTime = 0
+                if pathTraveled in self.keyPathNames:
+                    serviceTime = random.expovariate(self.serviceRate)
+                    
+                    for j in range(self.numKeysPressedPerMonkey):
+                        keyPressed = simKeyboard.getKeyPress()
+                        if len(self.createdWordList[self.wordIndex]) < self.wordLength:
+                            self.createdWordList[self.wordIndex] += keyPressed
+                        else: 
+                            if self.createdWordList[self.wordIndex].lower() in self.knownWordList:
+                                self.correctWordList.append(self.createdWordList[self.wordIndex])
 
-                        self.createdWordList.append(keyPressed)
-                        self.wordIndex += 1 
+                            self.createdWordList.append(keyPressed)
+                            self.wordIndex += 1 
+
+                if timeTaken + interarrivalTime + serviceTime > recordedTime:
+                    recordedTime = timeTaken + interarrivalTime + serviceTime
+          
+            self.time += recordedTime
 
         return self.time, self.correctWordList
 
 if __name__ == "__main__":
-    defaultSim = Simulation()
+    timeList = []
+    wordList = []
 
-    simTime = 0
-    simWordList = []
-    while len(simWordList) < 1 and simTime < 1000000:
-        tempTime, tempList = defaultSim.run()
-        simTime += tempTime
-        simWordList += tempList
-
-    print(simWordList, simTime)
+    numReplications = 10
+    for i in range(numReplications):
+        simTime, simWordList = Simulation().run()
+        timeList.append(simTime)
+        wordList += simWordList
+    
+    timeMean = statistics.mean(timeList)
+    print(timeMean)
