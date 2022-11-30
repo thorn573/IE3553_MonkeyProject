@@ -5,9 +5,10 @@ import random
     #   Key: String path name
     #   Value: List where element 0 is length & element 1 is cumulative probability 
 class Monkey:
-    def __init__(self, pathDict, speed = 1):
+    def __init__(self, pathDict, speed = 1, rockRate = 0):
         self.pathDict = pathDict
         self.speed = speed
+        self.rockRate = rockRate
     
     def travelRandomPath(self):
         dunif = random.uniform(0, 1)
@@ -24,4 +25,9 @@ class Monkey:
             travelTime = self.pathDict[paths[i]][0] * self.speed
         
         return pathTraveled, travelTime
+    
+    def destroyKeyboard(self):
+        dunif = random.uniform(0, 1)
+
+        return dunif < self.rockRate
 
