@@ -46,7 +46,7 @@ class Keyboard:
         i = 0
         keyPressed = keys[i]
 
-        while dunif > self.keyDict[keys[i]]:
+        while dunif > self.keyDict[keys[i]] and i < len(keys) - 1:
             i += 1
             keyPressed = keys[i]
         
