@@ -22,15 +22,19 @@ Norman.dat <- read_csv("Norman.csv")
 Alphabetical.dat <- read_csv("Alphabetical.csv")
 
 qwerty_uniform.ci <- ci(QWERTY.dat$TIME, Uniform.dat$TIME)
+qwerty_uniform.ci
 mean(qwerty_uniform.ci)
 
 qwerty_qfmlwy.ci <- ci(QWERTY.dat$TIME, QFMLWY.dat$TIME)
+qwerty_qfmlwy.ci
 mean(qwerty_qfmlwy.ci)
 
 qwerty_norman.ci <- ci(QWERTY.dat$TIME, Norman.dat$TIME)
+qwerty_norman.ci
 mean(qwerty_norman.ci)
 
 qwerty_alphabetical.ci <- ci(QWERTY.dat$TIME, Alphabetical.dat$TIME)
+qwerty_alphabetical.ci
 mean(qwerty_alphabetical.ci)
 
 histo <- function(x1, x2) {
@@ -45,7 +49,7 @@ histo <- function(x1, x2) {
           max(max(hist1$counts), max(hist2$counts)))
   
   hist(x1,
-       breaks = 10,
+       breaks = 20,
        xlim = xl,
        ylim = yl,
        xlab = "Time (Minutes)",
